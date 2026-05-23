@@ -1,7 +1,7 @@
 # CI de Nivel 01 - Disparo Manual através de clique
 
 # nome da pipeline
-name:'Execução Manual'
+name: 'Execução Manual'
 
 # gatilhos / triggers - regras de disparo
 # gartilho manual = workflow dispatch
@@ -19,7 +19,7 @@ jobs:
        runs-on: ubuntu-latest
 
       # passos do job
-      steps:
+       steps:
           #  clone do projeto
           - uses: actions/checkout@v4
 
