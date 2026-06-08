@@ -1,0 +1,35 @@
+trigger:
+  - master
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+  displayName: 'Instalar Node.js'
+
+- script: |
+    npm install -g yarn
+    yarn install --frozen-lockfile
+  displayName: 'Instalar Dependências (Yarn)'
+
+- script: yarn run test
+  displayName: 'Executar Testes Unitários'
+
+- script: yarn run test:mutation
+  displayName: 'Executar Testes de Mutação'
+
+- script: npx playwright install --with-deps
+  displayName: 'Instalar Navegadores do Playwright'
+
+- script: yarn run e2e
+  displayName: 'Executar Testes E2E (Playwright)'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(System.DefaultWorkingDirectory)/reports'
+    artifact: 'Relatorios-Testes'
+  displayName: 'Publicar Relatórios de Cobertura e Mutação'
