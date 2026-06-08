@@ -6,28 +6,35 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: NodeTool@0
+# 1. Instalar o Node.js na máquina virtual
+- task: UseNode@1
   inputs:
     versionSpec: '18.x'
   displayName: 'Instalar Node.js'
 
+# 2. Instalar dependências usando o Yarn
 - script: |
     npm install -g yarn
     yarn install --frozen-lockfile
   displayName: 'Instalar Dependências (Yarn)'
 
+# 3. Executar Testes Unitários
 - script: yarn run test
   displayName: 'Executar Testes Unitários'
 
+# 4. Executar Testes de Mutação (Stryker)
 - script: yarn run test:mutation
   displayName: 'Executar Testes de Mutação'
 
+# 5. Instalar navegadores necessários para o Playwright
 - script: npx playwright install --with-deps
   displayName: 'Instalar Navegadores do Playwright'
 
+# 6. Executar Testes End-to-End
 - script: yarn run e2e
   displayName: 'Executar Testes E2E (Playwright)'
 
+# 7. Recolher e guardar os relatórios gerados
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: '$(System.DefaultWorkingDirectory)/reports'
