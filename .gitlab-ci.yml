@@ -1,0 +1,16 @@
+stages:
+  - test
+
+run_all_tests:
+  stage: test
+  image: ://microsoft.com
+  script:
+    - yarn install --frozen-lockfile
+    - yarn run test
+    - yarn run test:mutation
+    - yarn run e2e
+  artifacts:
+    always: true
+    paths:
+      - reports/
+      - playwright-report/
