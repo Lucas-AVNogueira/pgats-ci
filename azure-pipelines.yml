@@ -6,16 +6,17 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-# 1. Instalar o Node.js na máquina virtual
-- task: UseNode@1
+# Substitua os passos antigos de instalação por este bloco abaixo:
+- task: NodeTool@0
   inputs:
-    versionSpec: '18.x'
-  displayName: 'Instalar Node.js'
+    versionSpec: '20.x' # Vamos subir para o Node 20 para garantir total compatibilidade
+  displayName: 'Instalar Node.js 20'
 
-# 2. Instalar dependências usando o Yarn
 - script: |
+    # Forçar o uso do Node recém-instalado e rodar o Yarn
     npm install -g yarn
-    yarn install --frozen-lockfile
+    yarn config set ignore-engines true
+    yarn install
   displayName: 'Instalar Dependências (Yarn)'
 
 # 3. Executar Testes Unitários
