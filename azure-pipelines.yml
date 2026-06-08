@@ -6,36 +6,54 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-# Substitua os passos antigos de instalação por este bloco abaixo:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '20.x' # Vamos subir para o Node 20 para garantir total compatibilidade
-  displayName: 'Instalar Node.js 20'
-
+# 1. Configurar Ambiente, Atualizar Node via NVM e Instalar Dependências
 - script: |
-    # Forçar o uso do Node recém-instalado e rodar o Yarn
+    # Carregar o NVM (gerenciador de versões do Node nativo do Ubuntu)
+    . $NVM_DIR/nvm.sh
+    
+    # Instalar e ativar o Node 20
+    nvm install 20
+    nvm use 20
+    
+    # Verificar se atualizou com sucesso no log
+    node -v
+    
+    # Instalar o yarn globalmente usando a versão nova do Node
     npm install -g yarn
-    yarn config set ignore-engines true
-    yarn install
-  displayName: 'Instalar Dependências (Yarn)'
+    
+    # Rodar a instalação do seu projeto
+    yarn install --frozen-lockfile
+  displayName: 'Garantir Node 20 e Instalar Dependências (Yarn)'
 
-# 3. Executar Testes Unitários
-- script: yarn run test
+# 2. Executar Testes Unitários (usando o Node 20 carregado)
+- script: |
+    . $NVM_DIR/nvm.sh
+    nvm use 20
+    yarn run test
   displayName: 'Executar Testes Unitários'
 
-# 4. Executar Testes de Mutação (Stryker)
-- script: yarn run test:mutation
+# 3. Executar Testes de Mutação (Stryker)
+- script: |
+    . $NVM_DIR/nvm.sh
+    nvm use 20
+    yarn run test:mutation
   displayName: 'Executar Testes de Mutação'
 
-# 5. Instalar navegadores necessários para o Playwright
-- script: npx playwright install --with-deps
+# 4. Instalar navegadores necessários para o Playwright
+- script: |
+    . $NVM_DIR/nvm.sh
+    nvm use 20
+    npx playwright install --with-deps
   displayName: 'Instalar Navegadores do Playwright'
 
-# 6. Executar Testes End-to-End
-- script: yarn run e2e
+# 5. Executar Testes End-to-End
+- script: |
+    . $NVM_DIR/nvm.sh
+    nvm use 20
+    yarn run e2e
   displayName: 'Executar Testes E2E (Playwright)'
 
-# 7. Recolher e guardar os relatórios gerados
+# 6. Recolher e guardar os relatórios gerados
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: '$(System.DefaultWorkingDirectory)/reports'
